@@ -12,6 +12,7 @@ void cloud_incoming(String &topic, String &payload) {
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(57600);
   WiFi.disconnect(true);
   WiFi.mode(WIFI_STA);
   WiFi.setAutoConnect(true);
@@ -44,7 +45,14 @@ void setup() {
    IOT.subscribe("/sensor/command");
 }
 
+unsigned long TERAKHIR_DIKIRIM = 0;
 void loop() {
   // put your main code here, to run repeatedly:
+  unsigned long SEKARANG = millis();
+  if(SEKARANG - TERAKHIR_DIKIRIM > 10000){
+    String sisa_memori = String(heap_caps_get_free_size(MALLOC_CAP_8BIT));
+    IOT.publish("/topic/Prita", sisa_memori);
+    TERAKHIR_DIKIRIM = SEKARANG;
+  }
   IOT.loop();
 }
